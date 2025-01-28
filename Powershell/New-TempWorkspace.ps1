@@ -8,11 +8,21 @@
 function New-TempWorkspace () {
     param (
         [Parameter(Mandatory=$false)][String]$Subject,
-        [Parameter(Mandatory=$false)][String]$WorkspacePath = "C:\Temp\TemporaryWorkspaces"
+        [Parameter(Mandatory=$false)][String]$WorkspacePath = "$($env:SystemDrive)\Temp\TemporaryWorkspaces"
     )
 
     if ($Subject -eq "") {
         $Subject = "General"
+    }
+
+    if (-not (Test-Path $WorkspacePath)) {
+        $answer = Read-Host "The workspace path $WorkspacePath does not exist. Would you like to create it? (Y/N)"
+        if ($answer -eq "Y" -or $answer -eq "y") {
+            New-Item -ItemType Directory -Path $WorkspacePath
+        } else {
+            Write-Output "Exiting..."
+            return
+        }
     }
 
     $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
